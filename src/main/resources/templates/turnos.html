@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sacar turno</title>
+    <link rel="stylesheet" href="../css/styles.css"/>
+    <link rel="stylesheet" href="../css/turnos.css"/>  
+</head>
+<body>
+    
+
+<span style="text-align:center;" th:classappend="${error} ? errorMsg : displayNone" th:text="${error}"></span>
+<span style="text-align:center;" th:classappend="${success} ? successMsg : displayNone" th:text="${success}"></span>
+				
+
+
+
+
+                <div th:if="${empleados != null}" class='input-fields'>                   
+					<h1 style="text-align:center;">Elige tu peluquero</h1>
+		                     <div class="cards-box"> 
+			                     <div th:each="empleado, index : ${empleados}">		                     
+				                     
+				                     <a th:href="@{'/turnos/' + ${empleado.id}}">
+				                        <div class="card">
+											<div class="img">Foto<br> aquí</div>
+											  <h1 th:text="${empleado.name}"></h1>
+										</div>
+									</a>
+		                
+								  </div>        
+		                      </div>
+	             </div>
+	
+		
+		
+		<div th:if="${empleadoElegido != null}">
+		
+						<form th:action="@{/turnos/calendario}" method="GET">
+                        	<div class='input-fields'>
+                    			<div class="input-admin">
+                    				<input type="hidden" name="idEmpleadoElegido" th:value="${empleadoElegido.id}">
+                    				
+	 								<select class='select-line' name="tipoId">
+										<option th:each="tipo, index : ${tipos}" th:value="${tipo.id}" th:text="${tipo.nombre + ' ($' + tipo.precio + ')'}"></option>
+																				
+									</select> 
+       				
+                    				<div style="display: flex; justify-content: center;">
+		                        		<button type="submit" class="btn coral">Elegir</button>		                        
+	                        		</div>
+	                        		
+	                        		
+	                        	</div>
+                    	    </div>
+                    	</form> 
+		
+		</div>
+		
+		
+		
+		
+		
+		<div th:if="${idEmpleadoElegido != null}">
+						
+                <div class='input-fields'>
+                    			                   			                  			
+					<!-- Slideshow container -->
+					<div class="slideshow-container">
+					
+					  <!-- Full-width images with number and caption text -->
+					  <div class="mySlides fade" th:each="calendario, iterCal : ${calendarioAnual}">					  
+					  	
+					  	<div class="top-calendario">			 
+						   	<a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+						    <div class="numbertext" th:text="${listaNombresMeses[__${iterCal.index}__] + ' ' + listaAnios[__${iterCal.index}__]}"></div>
+				    		<a class="next" onclick="plusSlides(1)">&#10095;</a>
+			    		</div>	
+			    		
+					    <table>
+                    		<thead>
+                                    <tr class="dias-cal">
+                                        <th>Dom.</th>
+                                        <th>Lun.</th>
+                                        <th>Mar.</th>
+                                        <th>Mie.</th>
+                                        <th>Jue.</th>
+                                        <th>Vie.</th>
+                                        <th>Sab.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>			        	
+                                    <tr th:each="semana, index : ${calendario}">
+                                        <td th:each="dia, index : ${semana}">
+	                                        <form th:classappend="${dia} ? '' : displayNone" th:action="@{/turnos/buscar}" method="GET">
+	                                        	<input type="hidden" name="id" th:value="${idEmpleadoElegido}">
+	                                        	<input type="hidden" name="tipo" th:value="${tipo}">
+	                                        	<input type="hidden" name="dia" th:value="${dia}">
+	                                        	<input type="hidden" name="mes" th:value="${listaMeses[__${iterCal.index}__]}">
+	                                        	<input type="hidden" name="anio" th:value="${listaAnios[__${iterCal.index}__]}">
+		                                        <button class="btn-calendario" type="submit">
+		                                        	<div th:classappend="${dia} ? calendarDay : displayNone" th:text="${dia}"></div>
+		                                        </button>                      	
+	                                        </form>
+                                        </td>
+                                       								
+                                    </tr>
+                         	</tbody>
+                         </table>
+					    
+					  </div>
+					</div>
+
+	
+                    			
+                    			
+               </div>
+		</div>
+		
+
+						<div class="horarios" th:if="${sinTurnos}">
+							<span style="text-align:center;" th:classappend="${sinTurnos} ? errorMsg : displayNone" th:text="${sinTurnos}"></span>
+						</div>						
+						
+						<div class="horarios" th:if="${turnos != null}">
+						
+							<div th:each="turno, index : ${turnos}">																        	
+                                    <form th:action="@{/turnos/agregarTurno}" method="POST">
+                                    	<input type="hidden" name="id" th:value="${idEmpleadoElegido}">
+	                                    <input type="hidden" name="tipo" th:value="${tipo}">
+	                                    <input type="hidden" name="dia" th:value="${diaElegido}">
+	                                    <input type="hidden" name="mes" th:value="${mesElegido}">
+	                                    <input type="hidden" name="anio" th:value="${anioElegido}">
+	                                    <input type="hidden" name="hora" th:value="${turno}">
+	                                    
+	                                    <button type="submit" class="btn2 green" style="width: auto; padding: 8px 12px; margin: 4px 6px;" th:text="${turno + 'hs.'}"></button>	
+                                    </form>
+                                   
+                            </div>	
+						</div>
+
+
+
+
+
+      
+<script type="text/javascript" src="../js/slide.js"></script>        
+
+</body>
+</html>
